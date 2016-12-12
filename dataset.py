@@ -24,7 +24,9 @@ class DataSet:
         # target
         depth_png = tf.read_file(depth_filename)
         depth = tf.image.decode_png(depth_png, channels=1)
-        depth = tf.cast(depth, tf.int64)
+        depth = tf.cast(depth, tf.float32)
+        depth = tf.div(depth, [255.0])
+        #depth = tf.cast(depth, tf.int64)
         # resize
         image = tf.image.resize_images(image, (IMAGE_HEIGHT, IMAGE_WIDTH))
         depth = tf.image.resize_images(depth, (TARGET_HEIGHT, TARGET_WIDTH))
@@ -34,13 +36,13 @@ class DataSet:
             [image, depth, invalid_depth],
             batch_size=self.batch_size,
             num_threads=4,
-            capacity= 50 + 3 * self.batch_size
+            capacity= 50 + 3 * self.batch_size,
         )
         return images, depths, invalid_depths
 
 
 def output_predict(depths, images, output_dir):
-    print("output predict into %s" % len(output_dir))
+    print("output predict into %s" % output_dir)
     if not gfile.Exists(output_dir):
         gfile.MakeDirs(output_dir)
     for i, (image, depth) in enumerate(zip(images, depths)):

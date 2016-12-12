@@ -34,7 +34,8 @@ def inference_refine(images, coarse7_output, keep_conv, reuse=False, trainable=T
 def loss(logits, depths, invalid_depths):
     logits_flat = tf.reshape(logits, [-1, 55*74])
     depths_flat = tf.reshape(depths, [-1, 55*74])
-    invalid_depths_flat = tf.reshape(depths, [-1, 55*74])
+    invalid_depths_flat = tf.reshape(invalid_depths, [-1, 55*74])
+
     predict = tf.mul(logits_flat, invalid_depths_flat)
     target = tf.mul(depths_flat, invalid_depths_flat)
     d = tf.sub(predict, target)
@@ -42,7 +43,7 @@ def loss(logits, depths, invalid_depths):
     sum_square_d = tf.reduce_sum(square_d, 1)
     sum_d = tf.reduce_sum(d, 1)
     sqare_sum_d = tf.square(sum_d)
-    cost = tf.reduce_mean(sum_square_d / 55*74 - 0.5*sqare_sum_d / math.pow(55*74, 2))
+    cost = tf.reduce_mean(sum_square_d / 55.0*74.0 - 0.5*sqare_sum_d / math.pow(55*74, 2))
     tf.add_to_collection('losses', cost)
     return tf.add_n(tf.get_collection('losses'), name='total_loss')
 

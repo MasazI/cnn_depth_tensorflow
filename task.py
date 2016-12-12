@@ -11,7 +11,7 @@ import train_operation as op
 
 MAX_STEPS = 10000000
 LOG_DEVICE_PLACEMENT = False
-BATCH_SIZE = 5
+BATCH_SIZE = 8
 TRAIN_FILE = "train.csv"
 COARSE_DIR = "coarse"
 REFINE_DIR = "refine"
@@ -85,13 +85,14 @@ def train():
                 print("Pretrained coarse Model Restored.")
             else:
                 print("No Pretrained coarse Model.")
-            refine_ckpt = tf.train.get_checkpoint_state(REFINE_DIR)
-            if refine_ckpt and refine_ckpt.model_checkpoint_path:
-                print("Pretrained refine Model Loading.")
-                saver_refine.restore(sess, refine_ckpt.model_checkpoint_path)
-                print("Pretrained refine Model Restored.")
-            else:
-                print("No Pretrained refine Model.")
+            if REFINE_TRAIN:
+                refine_ckpt = tf.train.get_checkpoint_state(REFINE_DIR)
+                if refine_ckpt and refine_ckpt.model_checkpoint_path:
+                    print("Pretrained refine Model Loading.")
+                    saver_refine.restore(sess, refine_ckpt.model_checkpoint_path)
+                    print("Pretrained refine Model Restored.")
+                else:
+                    print("No Pretrained refine Model.")
 
         # train
         coord = tf.train.Coordinator()
