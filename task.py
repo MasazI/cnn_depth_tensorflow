@@ -49,27 +49,21 @@ def train():
                 variable_name = variable.name
                 print("parameter: %s" % (variable_name))
                 if variable_name.find("/") < 0 or variable_name.count("/") != 1:
-                    print("ignore.")
                     continue
                 if variable_name.find('coarse') >= 0:
-                    print("coarse parameter: %s" % (variable_name))
                     coarse_params[variable_name] = variable
                 print("parameter: %s" %(variable_name))
                 if variable_name.find('fine') >= 0:
-                    print("refine parameter: %s" % (variable_name))
                     refine_params[variable_name] = variable
         else:
             for variable in tf.trainable_variables():
                 variable_name = variable.name
                 print("parameter: %s" %(variable_name))
                 if variable_name.find("/") < 0 or variable_name.count("/") != 1:
-                    print("ignore.")
                     continue
                 if variable_name.find('coarse') >= 0:
-                    print("coarse parameter: %s" %(variable_name))
                     coarse_params[variable_name] = variable
                 if variable_name.find('fine') >= 0:
-                    print("refine parameter: %s" %(variable_name))
                     refine_params[variable_name] = variable
         # define saver
         print coarse_params
