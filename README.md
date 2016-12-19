@@ -24,6 +24,10 @@ python task.py
 
 - You can see predicting images through training in data directory.
 
+# example
+![input](images/input.png)
+![output](images/output.png)
+
 ---
 
 Copyright (c) 2016 Masahiro Imai
