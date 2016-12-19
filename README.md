@@ -25,9 +25,9 @@ python task.py
 - You can see predicting images through training in data directory.
 
 # example
-- input
+- input  
 <img src="images/input.png" width="200">
-- output
+- output  
 <img src="images/output.png" width="200">
 
 ---
