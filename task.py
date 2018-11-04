@@ -10,7 +10,7 @@ import model
 import train_operation as op
 
 MAX_STEPS = 10000000
-LOG_DEVICE_PLACEMENT = False
+LOG_DEVICE_PLACEMENT = True
 BATCH_SIZE = 8
 TRAIN_FILE = "train.csv"
 COARSE_DIR = "coarse"
@@ -35,17 +35,17 @@ def train():
             logits = model.inference(images, keep_conv, keep_hidden)
         loss = model.loss(logits, depths, invalid_depths)
         train_op = op.train(loss, global_step, BATCH_SIZE)
-        init_op = tf.initialize_all_variables()
+        init_op = tf.global_variables_initializer()#tf.initialize_all_variables()
 
         # Session
         sess = tf.Session(config=tf.ConfigProto(log_device_placement=LOG_DEVICE_PLACEMENT))
-        sess.run(init_op)    
+        sess.run(init_op)
 
         # parameters
         coarse_params = {}
         refine_params = {}
         if REFINE_TRAIN:
-            for variable in tf.all_variables():
+            for variable in tf.global_variables():#tf.all_variables():
                 variable_name = variable.name
                 print("parameter: %s" % (variable_name))
                 if variable_name.find("/") < 0 or variable_name.count("/") != 1:
