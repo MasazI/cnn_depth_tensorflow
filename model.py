@@ -24,7 +24,7 @@ def inference_refine(images, coarse7_output, keep_conv, reuse=False, trainable=T
     fine1_conv = conv2d('fine1', images, [9, 9, 3, 63], [63], [1, 2, 2, 1], padding='VALID', reuse=reuse, trainable=trainable)
     fine1 = tf.nn.max_pool(fine1_conv, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME', name='fine_pool1')
     fine1_dropout = tf.nn.dropout(fine1, keep_conv)
-    fine2 = tf.concat(3, [fine1_dropout, coarse7_output])
+    fine2 = tf.concat([fine1_dropout, coarse7_output], 3)
     fine3 = conv2d('fine3', fine2, [5, 5, 64, 64], [64], [1, 1, 1, 1], padding='SAME', reuse=reuse, trainable=trainable)
     fine3_dropout = tf.nn.dropout(fine3, keep_conv)
     fine4 = conv2d('fine4', fine3_dropout, [5, 5, 64, 1], [1], [1, 1, 1, 1], padding='SAME', reuse=reuse, trainable=trainable)
@@ -36,9 +36,9 @@ def loss(logits, depths, invalid_depths):
     depths_flat = tf.reshape(depths, [-1, 55*74])
     invalid_depths_flat = tf.reshape(invalid_depths, [-1, 55*74])
 
-    predict = tf.mul(logits_flat, invalid_depths_flat)
-    target = tf.mul(depths_flat, invalid_depths_flat)
-    d = tf.sub(predict, target)
+    predict = tf.multiply(logits_flat, invalid_depths_flat)
+    target = tf.multiply(depths_flat, invalid_depths_flat)
+    d = tf.subtract(predict, target)
     square_d = tf.square(d)
     sum_square_d = tf.reduce_sum(square_d, 1)
     sum_d = tf.reduce_sum(d, 1)
@@ -53,6 +53,6 @@ def _add_loss_summaries(total_loss):
     losses = tf.get_collection('losses')
     loss_averages_op = loss_averages.apply(losses + [total_loss])
     for l in losses + [total_loss]:
-        tf.scalar_summary(l.op.name + ' (raw)', l)
-        tf.scalar_summary(l.op.name, loss_averages.average(l))
+        tf.summary.scalar(l.op.name + ' (raw)', l)
+        tf.summary.scalar(l.op.name, loss_averages.average(l))
     return loss_averages_op

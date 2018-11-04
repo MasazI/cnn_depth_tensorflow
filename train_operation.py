@@ -14,8 +14,8 @@ def _add_loss_summaries(total_loss):
     losses = tf.get_collection('losses')
     loss_averages_op = loss_averages.apply(losses + [total_loss])
     for l in losses + [total_loss]:
-        tf.scalar_summary(l.op.name + ' (raw)', l)
-        tf.scalar_summary(l.op.name, loss_averages.average(l))
+        tf.summary.scalar(l.op.name + ' (raw)', l)
+        tf.summary.scalar(l.op.name, loss_averages.average(l))
     return loss_averages_op
 
 
@@ -28,7 +28,7 @@ def train(total_loss, global_step, batch_size):
         decay_steps,
         LEARNING_RATE_DECAY_FACTOR,
         staircase=True)
-    tf.scalar_summary('learning_rate', lr)
+    tf.summary.scalar('learning_rate', lr)
     loss_averages_op = _add_loss_summaries(total_loss)
     with tf.control_dependencies([loss_averages_op]):
         opt = tf.train.AdamOptimizer(lr)
@@ -36,10 +36,10 @@ def train(total_loss, global_step, batch_size):
     apply_gradient_op = opt.apply_gradients(grads, global_step=global_step)
     for var in tf.trainable_variables():
         print(var.op.name)
-        tf.histogram_summary(var.op.name, var)
+        tf.summary.histogram(var.op.name, var)
     for grad, var in grads:
         if grad is not None:
-            tf.histogram_summary(var.op.name + '/gradients', grad)
+            tf.summary.histogram(var.op.name + '/gradients', grad)
     variable_averages = tf.train.ExponentialMovingAverage(
         MOVING_AVERAGE_DECAY, global_step)
     variables_averages_op = variable_averages.apply(tf.trainable_variables())

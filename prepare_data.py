@@ -4,12 +4,22 @@ import numpy as np
 import h5py
 from PIL import Image
 import random
+import wget
 
 
 def convert_nyu(path):
+    imgdir = os.path.join("data", "nyu_datasets");
+    if not os.path.exists(imgdir):
+        os.makedirs(imgdir)
+
+    nyuurl = 'http://horatio.cs.nyu.edu/mit/silberman/nyu_depth_v2/nyu_depth_v2_labeled.mat'
+    file = os.path.join("data", "nyu_depth_v2_labeled.mat")
+    if not os.path.exists(file):    
+        filename = wget.download(nyuurl, out="data")
+        print('\n downloaded: ', filename)
+
     print("load dataset: %s" % (path))
     f = h5py.File(path)
-
 
     trains = []
     for i, (image, depth) in enumerate(zip(f['images'], f['depths'])):
@@ -26,6 +36,9 @@ def convert_nyu(path):
         trains.append((image_name, depth_name))
 
     random.shuffle(trains)
+
+    if not os.path.exists('train.csv'):  
+        os.remove('train.csv')
 
     with open('train.csv', 'w') as output:
         for (image_name, depth_name) in trains:

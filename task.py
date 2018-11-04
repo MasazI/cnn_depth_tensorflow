@@ -66,7 +66,7 @@ def train():
                 if variable_name.find('fine') >= 0:
                     refine_params[variable_name] = variable
         # define saver
-        print coarse_params
+        print(coarse_params)
         saver_coarse = tf.train.Saver(coarse_params)
         if REFINE_TRAIN:
             saver_refine = tf.train.Saver(refine_params)
@@ -91,9 +91,9 @@ def train():
         # train
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-        for step in xrange(MAX_STEPS):
+        for step in range(MAX_STEPS):
             index = 0
-            for i in xrange(1000):
+            for i in range(1000):
                 _, loss_value, logits_val, images_val = sess.run([train_op, loss, logits, images], feed_dict={keep_conv: 0.8, keep_hidden: 0.5})
                 if index % 10 == 0:
                     print("%s: %d[epoch]: %d[iteration]: train loss %f" % (datetime.now(), step, index, loss_value))
