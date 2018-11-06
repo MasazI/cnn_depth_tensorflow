@@ -10,7 +10,7 @@ import model
 import train_operation as op
 
 MAX_STEPS = 10000000
-LOG_DEVICE_PLACEMENT = False
+LOG_DEVICE_PLACEMENT = True
 BATCH_SIZE = 8
 TRAIN_FILE = "train.csv"
 COARSE_DIR = "coarse"
@@ -35,17 +35,17 @@ def train():
             logits = model.inference(images, keep_conv, keep_hidden)
         loss = model.loss(logits, depths, invalid_depths)
         train_op = op.train(loss, global_step, BATCH_SIZE)
-        init_op = tf.initialize_all_variables()
+        init_op = tf.global_variables_initializer()#tf.initialize_all_variables()
 
         # Session
         sess = tf.Session(config=tf.ConfigProto(log_device_placement=LOG_DEVICE_PLACEMENT))
-        sess.run(init_op)    
+        sess.run(init_op)
 
         # parameters
         coarse_params = {}
         refine_params = {}
         if REFINE_TRAIN:
-            for variable in tf.all_variables():
+            for variable in tf.global_variables():#tf.all_variables():
                 variable_name = variable.name
                 print("parameter: %s" % (variable_name))
                 if variable_name.find("/") < 0 or variable_name.count("/") != 1:
@@ -66,7 +66,7 @@ def train():
                 if variable_name.find('fine') >= 0:
                     refine_params[variable_name] = variable
         # define saver
-        print coarse_params
+        print(coarse_params)
         saver_coarse = tf.train.Saver(coarse_params)
         if REFINE_TRAIN:
             saver_refine = tf.train.Saver(refine_params)
@@ -91,9 +91,9 @@ def train():
         # train
         coord = tf.train.Coordinator()
         threads = tf.train.start_queue_runners(sess=sess, coord=coord)
-        for step in xrange(MAX_STEPS):
+        for step in range(MAX_STEPS):
             index = 0
-            for i in xrange(1000):
+            for i in range(1000):
                 _, loss_value, logits_val, images_val = sess.run([train_op, loss, logits, images], feed_dict={keep_conv: 0.8, keep_hidden: 0.5})
                 if index % 10 == 0:
                     print("%s: %d[epoch]: %d[iteration]: train loss %f" % (datetime.now(), step, index, loss_value))

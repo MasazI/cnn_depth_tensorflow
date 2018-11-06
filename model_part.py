@@ -7,7 +7,7 @@ UPDATE_OPS_COLLECTION = '_update_ops_'
 def _variable_with_weight_decay(name, shape, stddev, wd, trainable=True):
     var = _variable_on_gpu(name, shape, tf.truncated_normal_initializer(stddev=stddev))
     if wd:
-        weight_decay = tf.mul(tf.nn.l2_loss(var), wd, name='weight_loss')
+        weight_decay = tf.multiply(tf.nn.l2_loss(var), wd, name='weight_loss')
         tf.add_to_collection('losses', weight_decay)
     return var
 

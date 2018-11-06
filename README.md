@@ -14,7 +14,7 @@ https://arxiv.org/abs/1406.2283
 - Download training data. Please see readme.md in data directory.
 - Convert mat to png images.
 ```
-python convert_mat_to_img.py
+python prepare_data.py
 ```
 
 - Lets's train.
